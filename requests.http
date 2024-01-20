@@ -1,0 +1,9 @@
+@cep = 29304560
+
+###
+# @name brasilAPI
+GET https://brasilapi.com.br/api/cep/v1/{{cep}}
+
+###
+# @name viaCEP
+GET http://viacep.com.br/ws/{{cep}}/json/
