@@ -1,9 +1,12 @@
 package main
 
 import (
+	"bufio"
 	"fmt"
+	"log"
 	"net/url"
 	"os"
+	"strings"
 	"time"
 
 	"github.com/go-resty/resty/v2"
@@ -21,7 +24,19 @@ func main() {
 	resultChannel1 := make(chan *Response)
 	resultChannel2 := make(chan *Response)
 
-	cep := os.Args[1]
+	var cep string
+	var err error
+
+	if len(os.Args) == 1 {
+		cep, err = askForCep()
+	} else {
+		cep = os.Args[1]
+	}
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	fmt.Printf("CEP: %s\n", cep)
 
 	go func() {
@@ -77,4 +92,18 @@ func makeRequest(url string) *Response {
 	}
 
 	return &Response{Origin: origin, Body: resp}
+}
+
+func askForCep() (string, error) {
+	reader := bufio.NewReader(os.Stdin)
+	fmt.Print("Digite um CEP: ")
+
+	texto, err := reader.ReadString('\n')
+	if err != nil {
+		fmt.Println("Erro ao ler a entrada:", err)
+		return "", err
+	}
+
+	texto = strings.TrimSpace(texto)
+	return texto, nil
 }
