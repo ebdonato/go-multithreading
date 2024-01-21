@@ -21,8 +21,7 @@ const VIA_CEP_URL = "http://viacep.com.br/ws/%s/json/"
 const BRASIL_CEP_URL = "https://brasilapi.com.br/api/cep/v1/%s"
 
 func main() {
-	resultChannel1 := make(chan *Response)
-	resultChannel2 := make(chan *Response)
+	resultChannel := make(chan *Response)
 
 	var cep string
 	var err error
@@ -40,18 +39,16 @@ func main() {
 	fmt.Printf("CEP: %s\n", cep)
 
 	go func() {
-		resultChannel1 <- makeRequest(fmt.Sprintf(VIA_CEP_URL, cep))
+		resultChannel <- makeRequest(fmt.Sprintf(VIA_CEP_URL, cep))
 	}()
 
 	go func() {
-		resultChannel2 <- makeRequest(fmt.Sprintf(BRASIL_CEP_URL, cep))
+		resultChannel <- makeRequest(fmt.Sprintf(BRASIL_CEP_URL, cep))
 	}()
 
 	select {
-	case result1 := <-resultChannel1:
-		printResponse(result1)
-	case result2 := <-resultChannel2:
-		printResponse(result2)
+	case result := <-resultChannel:
+		printResponse(result)
 	case <-time.After(1 * time.Second):
 		fmt.Println("Timeout: A resposta demorou muito para chegar.")
 	}
