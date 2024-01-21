@@ -91,6 +91,11 @@ func makeRequest(url string) *Response {
 		return &Response{Origin: "", Body: nil}
 	}
 
+	if resp.StatusCode() < 200 || resp.StatusCode() >= 300 {
+		fmt.Printf("Requisição falhou. Status: %d\n", resp.StatusCode())
+		return &Response{Origin: "", Body: nil}
+	}
+
 	return &Response{Origin: origin, Body: resp}
 }
 
